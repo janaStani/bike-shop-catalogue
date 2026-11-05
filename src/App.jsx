@@ -1,7 +1,11 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import "./index.css";
 import shopLogo from "./assets/web logo.png";
+import { supabase } from "./lib/supabase";
+import AdminLogin from "./pages/AdminLogin.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 
 const categories = [
   "Сите производи",
@@ -12,50 +16,37 @@ const categories = [
   "Додатоци",
 ];
 
-const products = [
-  {
-    id: 1,
-    name: "Mountain Bike Pro",
-    brand: "Trek",
-    category: "Планински велосипеди",
-    price: 899,
-    image:
-      "https://res.cloudinary.com/trekbikes/image/upload/f_auto,c_fill,ar_4:3,w_1080,q_auto/FuelEX98XTDI2-27-79594-B-Primary",
-  },
-  {
-    id: 2,
-    name: "Electric Mountain Bike",
-    brand: "Specialized",
-    category: "Електрични велосипеди",
-    price: 2499,
-    image:
-      "https://resources.specialized.com/media-libraries/mleF1gIlpsGs/images/containers/3HEcaaAbkqZteDw67FwMUSTCVxm/95727-10_LEVO-R-PRO-REDBLKCMLN-BLK-DLMMET-S2--_HERO-PDP.webp?bg=f1f1f1&w=2000&h=1125&fit=fill&crop=focalpoint&q=75",
-  },
-  {
-    id: 3,
-    name: "Road Bike Elite",
-    brand: "Giant",
-    category: "Велосипеди за друмско возење",
-    price: 1299,
-    image:
-      "https://images2.giant-bicycles.com/b_white%2Cc_pad%2Ch_850%2Cq_80/gnfkbuoldekzx6mzwsvw/MY27PropelAdvanced1_ColorACarbon.jpg",
-  },
-  {
-    id: 4,
-    name: "Bike Helmet",
-    brand: "Abus",
-    category: "Додатоци",
-    price: 79,
-    image:
-      "https://c1.abus.com/akg-pim-assets-01/Mobile%20Sicherheit/Helme/Road/Macator%20MIPS/Kat2022/89224_Macator%20MIPS_polar%20white_side_abus_640.png",
-  },
-];
 
-function App() {
+
+function HomePage() {
   const [activeCategory, setActiveCategory] =
     useState("Сите производи");
 
   const [search, setSearch] = useState("");
+
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+  async function fetchProducts() {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching products:", error);
+      setError("Не може да се вчитаат производите.");
+    } else {
+      setProducts(data);
+    }
+
+    setLoading(false);
+  }
+
+  fetchProducts();
+}, []);
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
@@ -64,7 +55,7 @@ function App() {
 
     const matchesSearch =
       product.name.toLowerCase().includes(search.toLowerCase()) ||
-      product.brand.toLowerCase().includes(search.toLowerCase());
+      (product.brand || "").toLowerCase().includes(search.toLowerCase());
 
     return matchesCategory && matchesSearch;
   });
@@ -223,11 +214,15 @@ function App() {
           </div>
 
           <div className="product-grid">
-            {filteredProducts.length > 0 ? (
+            {loading ? (
+              <p>Се вчитуваат производите...</p>
+            ) : error ? (
+              <p>{error}</p>
+            ) : filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
                 <article className="product-card" key={product.id}>
                   <div className="product-image">
-                    <img src={product.image} alt={product.name} />
+                    <img src={product.image_url} alt={product.name} />
 
                     <span className="product-category condensed-text">
                       {product.category}
@@ -247,7 +242,7 @@ function App() {
 
                     <div className="product-bottom">
                       <strong className="condensed-text">
-                        {product.price.toLocaleString("mk-MK")} €
+                        {Number(product.price).toLocaleString("mk-MK")} €
                       </strong>
 
                       <button
@@ -310,11 +305,21 @@ function App() {
 
         <p>
           <span className="condensed-text">
-            © 2026 Вози Си Точак. Сите права се задржани.
+            © 2026 Вози Си Точак. All rights reserved.
           </span>
         </p>
       </footer>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+    </Routes>
   );
 }
 
