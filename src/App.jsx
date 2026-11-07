@@ -22,6 +22,8 @@ function HomePage() {
   const [activeCategory, setActiveCategory] =
     useState("Сите производи");
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const [search, setSearch] = useState("");
 
   const [products, setProducts] = useState([]);
@@ -63,20 +65,42 @@ function HomePage() {
   return (
     <div className="app">
       <header className="navbar">
-        <a href="#" className="logo-link">
+        <a href="#" className="logo-link" onClick={() => setMenuOpen(false)}>
           <img src={shopLogo} alt="Лого на продавницата" />
         </a>
 
-        <nav>
-          <a href="#"><span className="condensed-text">Почетна</span></a>
-          <a href="#catalogue"><span className="condensed-text">Производи</span></a>
-          <a href="#categories"><span className="condensed-text">Категории</span></a>
-          <a href="#contact"><span className="condensed-text">Контакт</span></a>
+        <nav className={menuOpen ? "mobile-nav open" : "mobile-nav"}>
+          <a href="#" onClick={() => setMenuOpen(false)}>
+            <span className="condensed-text">Почетна</span>
+          </a>
+
+          <a href="#catalogue" onClick={() => setMenuOpen(false)}>
+            <span className="condensed-text">Производи</span>
+          </a>
+
+          <a href="#categories" onClick={() => setMenuOpen(false)}>
+            <span className="condensed-text">Категории</span>
+          </a>
+
+          <a href="#contact" onClick={() => setMenuOpen(false)}>
+            <span className="condensed-text">Контакт</span>
+          </a>
         </nav>
 
         <a href="#catalogue" className="nav-button">
           <span className="condensed-text">Разгледај велосипеди</span>
         </a>
+
+        <button
+          className="menu-toggle"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Отвори мени"
+          aria-expanded={menuOpen}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </header>
 
       <main>
