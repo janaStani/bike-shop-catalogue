@@ -1,11 +1,24 @@
 
-import { useState, useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Routes, Route } from "react-router-dom";
 import "./index.css";
 import shopLogo from "./assets/web logo.png";
 import { supabase } from "./lib/supabase";
 import AdminLogin from "./pages/AdminLogin.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
+
+const SHOP = {
+  phone: "+38975437572",
+  phoneDisplay: "+389 75 437 572",
+  address: "Трајко Бошковски - Тарцан бр.6, Ѓорче Петров, 1000 Скопје",
+  hours: "",
+  mapsUrl:
+    "https://www.google.com/maps/place/Used+Bike+Macedonia/@42.0059342,21.3366672,17z/data=!3m1!4b1!4m6!3m5!1s0x1354132726285d71:0x68531133cea6ca58!8m2!3d42.0059342!4d21.3392421!16s%2Fg%2F11hzxqgp7v",
+  directionsUrl:
+    "https://www.google.com/maps/dir/?api=1&destination=42.0059342,21.3392421",
+  mapEmbedUrl:
+    "https://maps.google.com/maps?q=42.0059342,21.3392421&z=16&output=embed",
+};
 
 const categories = [
   "Сите производи",
@@ -29,6 +42,7 @@ function HomePage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const filtersRef = useRef(null);
 
   useEffect(() => {
   async function fetchProducts() {
@@ -50,6 +64,19 @@ function HomePage() {
   fetchProducts();
 }, []);
 
+  useEffect(() => {
+    const bar = filtersRef.current;
+    const active = bar?.querySelector(".filter-button.active");
+    if (!bar || !active) return;
+
+    bar.scrollTo({
+      left: active.offsetLeft - (bar.clientWidth - active.offsetWidth) / 2,
+      behavior: "smooth",
+    });
+  }, [activeCategory]);
+
+  const isAvailable = (product) => product.available !== false;
+
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
       activeCategory === "Сите производи" ||
@@ -61,6 +88,10 @@ function HomePage() {
 
     return matchesCategory && matchesSearch;
   });
+
+  filteredProducts.sort(
+    (a, b) => Number(isAvailable(b)) - Number(isAvailable(a))
+  );
 
   return (
     <div className="app">
@@ -74,12 +105,12 @@ function HomePage() {
             <span className="condensed-text">Почетна</span>
           </a>
 
-          <a href="#catalogue" onClick={() => setMenuOpen(false)}>
-            <span className="condensed-text">Производи</span>
-          </a>
-
           <a href="#categories" onClick={() => setMenuOpen(false)}>
             <span className="condensed-text">Категории</span>
+          </a>
+
+          <a href="#catalogue" onClick={() => setMenuOpen(false)}>
+            <span className="condensed-text">Производи</span>
           </a>
 
           <a href="#contact" onClick={() => setMenuOpen(false)}>
@@ -94,7 +125,7 @@ function HomePage() {
         <button
           className="menu-toggle"
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Отвори мени"
+          aria-label={menuOpen ? "Затвори мени" : "Отвори мени"}
           aria-expanded={menuOpen}
         >
           <span></span>
@@ -171,7 +202,7 @@ function HomePage() {
           </div>
 
           <div className="category-list">
-            {categories.slice(1).map((category) => (
+            {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => {
@@ -210,7 +241,7 @@ function HomePage() {
           </div>
 
           <div className="catalogue-controls">
-            <div className="filters">
+            <div className="filters" ref={filtersRef}>
               {categories.map((category) => (
                 <button
                   key={category}
@@ -231,6 +262,7 @@ function HomePage() {
             <input
               type="search"
               placeholder="Пребарај производи..."
+              aria-label="Пребарај производи"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               className="search-input"
@@ -244,13 +276,33 @@ function HomePage() {
               <p>{error}</p>
             ) : filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
-                <article className="product-card" key={product.id}>
+                <article
+                  className={
+                    isAvailable(product)
+                      ? "product-card"
+                      : "product-card is-sold-out"
+                  }
+                  key={product.id}
+                >
                   <div className="product-image">
-                    <img src={product.image_url} alt={product.name} />
+                    {product.image_url ? (
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <div className="product-image-empty">Нема слика</div>
+                    )}
 
                     <span className="product-category condensed-text">
                       {product.category}
                     </span>
+
+                    {!isAvailable(product) && (
+                      <span className="product-sold-out">Распродадено</span>
+                    )}
                   </div>
 
                   <div className="product-info">
@@ -296,29 +348,60 @@ function HomePage() {
         </section>
 
         <section className="contact-section" id="contact">
-          <div>
-            <span className="eyebrow condensed-text">
-              ТИ ТРЕБА ПОМОШ?
-            </span>
+          <div className="contact-info">
+            <span className="eyebrow">ТИ ТРЕБА ПОМОШ?</span>
 
-            <h2>
-              <span className="condensed-text">
-                Да го пронајдеме вистинскиот велосипед за тебе.
-              </span>
-            </h2>
+            <h2>Да го пронајдеме вистинскиот велосипед за тебе.</h2>
 
-            <p>
-              <span className="condensed-text">
-                Имаш прашања за некој производ? Контактирај нè.
-              </span>
-            </p>
+            <p>Имаш прашања за некој производ? Контактирај нè.</p>
+
+            <dl className="contact-details">
+              <div>
+                <dt>Телефон</dt>
+                <dd>
+                  <a href={`tel:${SHOP.phone}`}>{SHOP.phoneDisplay}</a>
+                </dd>
+              </div>
+
+              {SHOP.address && (
+                <div>
+                  <dt>Адреса</dt>
+                  <dd>{SHOP.address}</dd>
+                </div>
+              )}
+
+              {SHOP.hours && (
+                <div>
+                  <dt>Работно време</dt>
+                  <dd>{SHOP.hours}</dd>
+                </div>
+              )}
+            </dl>
+
+            <div className="contact-actions">
+              <a href={`tel:${SHOP.phone}`} className="primary-button">
+                Повикај →
+              </a>
+
+              <a
+                href={SHOP.directionsUrl}
+                className="secondary-button"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Насоки →
+              </a>
+            </div>
           </div>
 
-          <a href="mailto:info@example.com" className="primary-button">
-            <span className="condensed-text">
-              Контактирај нè →
-            </span>
-          </a>
+          <div className="contact-map">
+            <iframe
+              title="Локација на продавницата"
+              src={SHOP.mapEmbedUrl}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
         </section>
       </main>
 
@@ -329,7 +412,7 @@ function HomePage() {
 
         <p>
           <span className="condensed-text">
-            © 2026 Вози Си Точак. All rights reserved.
+            © 2026 Вози Си Точак. Сите права се задржани.
           </span>
         </p>
       </footer>

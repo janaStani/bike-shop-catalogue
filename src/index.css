@@ -3,31 +3,11 @@
 ======================================== */
 
 @font-face {
-  font-family: "Bounded";
-  src: url("./assets/fonts/bounded-variable.ttf") format("truetype");
-  font-weight: 100 900;
+  font-family: "Bounded Condensed";
+  src: url("./assets/fonts/bounded-condensed-variable.woff2") format("woff2");
+  font-weight: 200 900;
   font-style: normal;
-}
-
-@font-face {
-  font-family: "Bounded";
-  src: url("./assets/fonts/bounded-extralight.ttf") format("truetype");
-  font-weight: 200;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Bounded";
-  src: url("./assets/fonts/bounded-regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Bounded";
-  src: url("./assets/fonts/bounded-black.ttf") format("truetype");
-  font-weight: 900;
-  font-style: normal;
+  font-display: swap;
 }
 
 
@@ -40,8 +20,9 @@
   --dark-color: #20231f;
   --dark-section: #20251e;
   --light-background: #f7f8f5;
+  --font-condensed: "Bounded Condensed", "Arial Narrow", sans-serif;
 
-  font-family: "Bounded", sans-serif;
+  font-family: var(--font-condensed);
   font-weight: 400;
   color: var(--dark-color);
   background: #ffffff;
@@ -49,6 +30,7 @@
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
 }
 
 * {
@@ -59,11 +41,12 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 90px;
 }
 
 body {
   min-width: 320px;
-  font-family: "Bounded", sans-serif;
+  font-family: var(--font-condensed);
   font-weight: 400;
 }
 
@@ -98,31 +81,12 @@ button {
 ======================================== */
 
 .condensed-text {
-  display: inline-block;
-  transform: scaleX(0.8069);
-  transform-origin: left center;
-  margin-right: calc((0.8069 - 1) * 100%);
+  font-family: var(--font-condensed);
 }
 
-/* Right-aligned condensed text */
 .section-heading p,
 .footer p {
   text-align: right;
-}
-
-.section-heading p .condensed-text,
-.footer p .condensed-text {
-  transform-origin: right center;
-  margin-right: 0;
-  margin-left: calc((0.8069 - 1) * 100%);
-}
-
-/* Buttons keep centered origin */
-.nav-button .condensed-text,
-.primary-button .condensed-text {
-  transform-origin: center center;
-  margin-left: 0;
-  margin-right: 0;
 }
 
 
@@ -138,6 +102,10 @@ button {
   justify-content: space-between;
   border-bottom: 1px solid #eeeeeb;
   gap: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #ffffff;
 }
 
 .logo-link {
@@ -211,21 +179,26 @@ button {
   color: var(--dark-color);
   font-size: 16px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   margin-bottom: 20px;
 }
 
 .hero h1 {
   font-size: clamp(45px, 5vw, 70px);
   line-height: 1.08;
-  letter-spacing: -3px;
+  letter-spacing: -2.4px;
   margin-bottom: 24px;
 }
 
 .hero h1 .highlight {
   color: var(--dark-color);
-  background: var(--accent-color);
   padding: 0 5px;
+  background-image: linear-gradient(var(--accent-color), var(--accent-color));
+  background-repeat: no-repeat;
+  background-size: 100% 1.03em;
+  background-position: 0 0.185em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 .hero-content p {
@@ -324,7 +297,7 @@ button {
 .section-heading h2,
 .contact-section h2 {
   font-size: 34px;
-  letter-spacing: -1.3px;
+  letter-spacing: -1px;
 }
 
 .section-heading p {
@@ -350,6 +323,8 @@ button {
   text-align: left;
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
   font-size: 18px;
   font-weight: 600;
   transition: 0.2s;
@@ -383,6 +358,7 @@ button {
   gap: 8px;
   flex: 1;
   min-width: 0;
+  position: relative;
 }
 
 .filter-button {
@@ -393,6 +369,7 @@ button {
   color: #777;
   transition: 0.2s;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .filter-button:hover {
@@ -412,9 +389,16 @@ button {
   border: 1px solid #e7e7e3;
   outline: none;
   width: 280px;
-  font-size: 16px;
-  transform: scaleX(0.8069);
-  transform-origin: right center;
+  font-size: 17px;
+  border-radius: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: #ffffff;
+  color: var(--dark-color);
+}
+
+.search-input::placeholder {
+  color: #9a9a96;
 }
 
 .search-input:focus {
@@ -435,6 +419,9 @@ button {
 .product-card {
   border: 1px solid #eeeeeb;
   transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .product-card:hover {
@@ -463,13 +450,49 @@ button {
   position: absolute;
   top: 12px;
   left: 12px;
+  max-width: calc(100% - 24px);
   background: white;
   padding: 9px 11px;
   font-size: 14px;
+  line-height: 1.3;
+}
+
+.product-image-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 15px;
+}
+
+.product-sold-out {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background: var(--dark-color);
+  color: #ffffff;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.product-card.is-sold-out .product-image img {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+
+.product-card.is-sold-out .product-info {
+  color: #8a8a86;
 }
 
 .product-info {
   padding: 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-brand {
@@ -482,9 +505,11 @@ button {
 .product-info h3 {
   font-size: 19px;
   margin: 9px 0 20px;
+  overflow-wrap: anywhere;
 }
 
 .product-bottom {
+  margin-top: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -512,7 +537,10 @@ button {
   color: #888;
   padding: 30px 0;
   font-size: 17px;
-  white-space: nowrap;
+}
+
+.product-grid > p {
+  grid-column: 1 / -1;
 }
 
 
@@ -542,6 +570,74 @@ button {
 
 .contact-section .eyebrow {
   color: var(--accent-color);
+}
+
+.contact-info {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.contact-details {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.contact-details dt {
+  color: var(--accent-color);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.contact-details dd {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 15px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.secondary-button:hover {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--dark-color);
+}
+
+.contact-map {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 320px;
+  background: #343a31;
+}
+
+.contact-map iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 
@@ -643,12 +739,6 @@ button {
     text-align: left;
   }
 
-  .section-heading p .condensed-text {
-    transform-origin: left center;
-    margin-left: 0;
-    margin-right: calc((0.8069 - 1) * 100%);
-  }
-
   /* Catalogue controls – stack + scrollable filters */
   .catalogue-controls {
     flex-direction: column;
@@ -660,12 +750,15 @@ button {
     overflow-x: auto;
     flex-wrap: nowrap;
     padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .filters::-webkit-scrollbar {
+    display: none;
   }
 
   .search-input {
     width: 100%;
-    transform: none;
-    transform-origin: left center;
   }
 }
 
@@ -705,7 +798,29 @@ button {
   }
 
   .hero h1 {
-    font-size: 48px;
+    font-size: clamp(34px, 10.5vw, 48px);
+    letter-spacing: -1.6px;
+  }
+
+  .hero-content p {
+    font-size: 16px;
+    max-width: none;
+  }
+
+  .image-label {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    padding: 12px 14px;
+    gap: 4px;
+  }
+
+  .image-label span {
+    font-size: 12px;
+  }
+
+  .image-label strong {
+    font-size: 15px;
   }
 
   .hero-image {
@@ -722,11 +837,16 @@ button {
   }
 
   .category-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
 
   .category-button {
-    font-size: 16px;
+    font-size: 15px;
+    padding: 14px;
+    gap: 8px;
+    min-height: 76px;
+    line-height: 1.25;
   }
 
   .product-grid {
@@ -777,18 +897,39 @@ button {
 
   .contact-section {
     padding: 45px 5%;
-    align-items: start;
+    align-items: stretch;
     flex-direction: column;
+  }
+
+  .contact-actions a {
+    flex: 1 1 0;
+    min-height: 50px;
+  }
+
+  .contact-map {
+    flex: none;
+    height: 240px;
   }
 
   .footer {
     padding: 25px 5%;
     gap: 15px;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
   .footer p {
-    font-size: 13px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .logo-link {
+    margin-right: 0;
+  }
+
+  html {
+    scroll-padding-top: 72px;
   }
 }
 /* ========================================
@@ -799,7 +940,7 @@ button {
   min-height: 100vh;
   background: #f7f8f5;
   color: #20231f;
-  font-family: "Bounded", sans-serif;
+  font-family: var(--font-condensed);
 }
 
 .admin-header {
@@ -814,18 +955,18 @@ button {
 
 .admin-eyebrow {
   color: #b3bd9e;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 1.5px;
 }
 
 .admin-header h1 {
-  font-size: clamp(28px, 4vw, 42px);
+  font-size: clamp(32px, 4.4vw, 46px);
   margin: 12px 0;
 }
 
 .admin-header p {
   color: #c5c9c1;
-  font-size: 13px;
+  font-size: 16px;
 }
 
 .admin-logout {
@@ -864,13 +1005,13 @@ button {
 }
 
 .admin-stat-card span {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 1px;
   color: #777d71;
 }
 
 .admin-stat-card strong {
-  font-size: 32px;
+  font-size: 35px;
 }
 
 .admin-products-section {
@@ -884,7 +1025,7 @@ button {
 }
 
 .admin-section-heading h2 {
-  font-size: 24px;
+  font-size: 26px;
   margin-top: 10px;
 }
 
@@ -897,12 +1038,12 @@ button {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .admin-table th {
   color: #777d71;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 1px;
   font-weight: 500;
   padding: 15px 12px;
@@ -934,7 +1075,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
+  font-size: 11px;
   color: #777d71;
   white-space: normal;
   text-align: center;
@@ -947,18 +1088,18 @@ button {
 }
 
 .admin-product-cell strong {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .admin-product-cell span {
   color: #777d71;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .admin-status {
   display: inline-block;
   padding: 6px 9px;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .admin-status.available {
@@ -977,7 +1118,7 @@ button {
   color: #a33d35;
   padding: 8px 12px;
   font-family: inherit;
-  font-size: 10px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -992,7 +1133,7 @@ button {
   color: #42483b;
   padding: 8px 12px;
   font-family: inherit;
-  font-size: 10px;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   margin-right: 5px;
@@ -1007,7 +1148,7 @@ button {
 .admin-message {
   padding: 25px 0;
   color: #777d71;
-  font-size: 13px;
+  font-size: 16px;
 }
 
 .admin-error {
@@ -1028,12 +1169,26 @@ button {
   }
 
   .admin-stats {
-    grid-template-columns: 1fr;
-    gap: 12px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 28px;
   }
 
   .admin-stat-card {
-    padding: 18px;
+    padding: 12px 10px;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .admin-stat-card span {
+    font-size: 11px;
+    line-height: 1.25;
+    letter-spacing: 0.4px;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-stat-card strong {
+    font-size: 24px;
   }
 
   .admin-products-section {
@@ -1059,8 +1214,8 @@ button {
   color: #20251e;
   border: none;
   padding: 13px 20px;
-  font-family: "Bounded", sans-serif;
-  font-size: 11px;
+  font-family: var(--font-condensed);
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s ease;
@@ -1092,7 +1247,7 @@ button {
 }
 
 .admin-form-heading h2 {
-  font-size: 23px;
+  font-size: 25px;
   margin-top: 10px;
   color: #20251e;
 }
@@ -1117,7 +1272,7 @@ button {
 }
 
 .admin-field label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: #454b40;
 }
@@ -1134,7 +1289,7 @@ button {
   border-radius: 2px;
   padding: 14px 15px;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 14px;
   color: #20251e;
   outline: none;
   transition: border-color 0.2s ease;
@@ -1166,7 +1321,7 @@ button {
   border: 1px dashed #c8cdbf;
   padding: 18px;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 13px;
   color: #777d71;
   cursor: pointer;
 }
@@ -1178,7 +1333,7 @@ button {
   padding: 10px 14px;
   margin-right: 15px;
   font-family: inherit;
-  font-size: 10px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -1188,7 +1343,7 @@ button {
 
 .admin-file-name {
   color: #526343;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 /* AVAILABILITY */
@@ -1198,7 +1353,7 @@ button {
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  font-size: 11px;
+  font-size: 13px;
   color: #454b40;
 }
 
@@ -1224,7 +1379,7 @@ button {
 .admin-save-button {
   padding: 13px 20px;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 13px;
   cursor: pointer;
   transition: 0.2s ease;
 }
@@ -1296,7 +1451,7 @@ button {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
   background: #f7f8f5;
-  font-family: "Bounded", sans-serif;
+  font-family: var(--font-condensed);
 }
 
 /* LEFT SIDE */
@@ -1329,7 +1484,7 @@ button {
 
 .login-label,
 .login-footer-text {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 2px;
   color: #aeb5a5;
 }
@@ -1341,14 +1496,14 @@ button {
 
 .login-decoration-content > span {
   color: var(--accent-color);
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 2px;
 }
 
 .login-decoration-content h1 {
-  font-size: clamp(42px, 5vw, 70px);
+  font-size: clamp(46px, 5.5vw, 76px);
   line-height: 1.15;
-  letter-spacing: -3px;
+  letter-spacing: -2.4px;
   margin: 22px 0;
 }
 
@@ -1358,7 +1513,7 @@ button {
 
 .login-decoration-content p {
   color: #aeb5a5;
-  font-size: 13px;
+  font-size: 16px;
   max-width: 320px;
 }
 
@@ -1401,13 +1556,13 @@ button {
 }
 
 .login-heading h2 {
-  font-size: 29px;
-  letter-spacing: -1px;
+  font-size: 32px;
+  letter-spacing: -0.8px;
   margin: 13px 0 8px;
 }
 
 .login-heading p {
-  font-size: 12px;
+  font-size: 14px;
   color: #8d8e83;
 }
 
@@ -1426,7 +1581,7 @@ button {
 }
 
 .login-field label {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 1px;
   color: #131311;
   font-weight: 600;
@@ -1439,7 +1594,7 @@ button {
   border: 1px solid #e1e4dc;
   outline: none;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 13px;
   transition: border-color 0.2s;
 }
 
@@ -1459,7 +1614,7 @@ button {
   color: var(--dark-color);
   border: 1px solid var(--accent-color);
   font-family: inherit;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -1478,19 +1633,19 @@ button {
 }
 
 .login-form button span {
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .login-error {
   color: #a33d35;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .login-back {
   display: inline-block;
   margin-top: 30px;
   color: #858b7e;
-  font-size: 10px;
+  font-size: 12px;
   transition: color 0.2s;
 }
 
@@ -1511,12 +1666,12 @@ button {
   }
 
   .login-decoration-content h1 {
-    font-size: 38px;
+    font-size: 42px;
     margin: 12px 0;
   }
 
   .login-decoration-content p {
-    font-size: 11px;
+    font-size: 13px;
   }
 
   .login-footer-text {
@@ -1550,8 +1705,8 @@ button {
   flex-direction: column;
   justify-content: center;
   gap: 5px;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   padding: 8px;
   border: 1px solid var(--dark-color);
   background: transparent;
@@ -1568,7 +1723,7 @@ button {
 
 @media (max-width: 600px) {
   .navbar {
-    position: relative;
+    position: sticky;
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
@@ -1639,4 +1794,25 @@ button {
     display: flex !important;
     background: transparent !important;
   }
+}
+
+@media (max-width: 480px) {
+  .navbar > .nav-button {
+    display: none;
+  }
+}
+
+@media (max-width: 800px) {
+  .login-field input,
+  .admin-field input:not([type="checkbox"]),
+  .admin-field select,
+  .admin-field textarea {
+    font-size: 16px;
+  }
+}
+
+.admin-field select,
+.admin-field select option {
+  font-family: var(--font-condensed);
+  font-weight: 300;
 }

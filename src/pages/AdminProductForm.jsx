@@ -189,7 +189,7 @@ function AdminProductForm({ onProductAdded, onCancel, product = null }) {
             />
 
             <span className="admin-file-name">
-                Или прикачи слика од компјутер:
+                Или прикачи слика:
             </span>
 
             <input
