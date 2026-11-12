@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { imageSrc } from "../lib/imageUrl";
 import AdminProductForm from "./AdminProductForm.jsx";
 
 function AdminDashboard() {
@@ -193,7 +194,7 @@ function AdminDashboard() {
                         <div className="admin-product-cell">
                           {product.image_url ? (
                             <img
-                              src={product.image_url}
+                              src={imageSrc(product.image_url)}
                               alt={product.name}
                             />
                           ) : (

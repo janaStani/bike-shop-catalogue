@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import "./index.css";
 import shopLogo from "./assets/web logo.png";
 import { supabase } from "./lib/supabase";
+import { imageSrc } from "./lib/imageUrl";
 import AdminLogin from "./pages/AdminLogin.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 
@@ -287,7 +288,7 @@ function HomePage() {
                   <div className="product-image">
                     {product.image_url ? (
                       <img
-                        src={product.image_url}
+                        src={imageSrc(product.image_url)}
                         alt={product.name}
                         loading="lazy"
                         decoding="async"

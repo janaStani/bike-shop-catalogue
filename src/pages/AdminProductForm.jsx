@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
+import { compressImage } from "../lib/compressImage";
 
 const categories = [
   "Планински велосипеди",
@@ -32,12 +33,15 @@ function AdminProductForm({ onProductAdded, onCancel, product = null }) {
 
     // If a file was selected, upload it to Supabase
     if (image) {
-    const fileExtension = image.name.split(".").pop();
-    const fileName = `${Date.now()}.${fileExtension}`;
+    const compressed = await compressImage(image);
+    const fileName = `${Date.now()}.${compressed.extension}`;
 
     const { error: uploadError } = await supabase.storage
         .from("product-images")
-        .upload(fileName, image);
+        .upload(fileName, compressed.blob, {
+          contentType: compressed.type,
+          cacheControl: "604800",
+        });
 
     if (uploadError) {
         console.error(uploadError);
