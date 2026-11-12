@@ -25,6 +25,20 @@ function ProductModal({ product, index, total, phone, phoneDisplay, onClose, onP
 
   return (
     <div className="product-modal-backdrop" onClick={onClose}>
+      <div className="product-modal-frame">
+      {total > 1 && (
+        <button
+          className="product-modal-nav prev"
+          onClick={(event) => {
+            event.stopPropagation();
+            onPrev();
+          }}
+          aria-label="Претходен производ"
+        >
+          ‹
+        </button>
+      )}
+
       <div
         className="product-modal"
         role="dialog"
@@ -50,24 +64,6 @@ function ProductModal({ product, index, total, phone, phoneDisplay, onClose, onP
 
           {!available && <span className="product-sold-out">Распродадено</span>}
 
-          {total > 1 && (
-            <>
-              <button
-                className="product-modal-nav prev"
-                onClick={onPrev}
-                aria-label="Претходен производ"
-              >
-                ‹
-              </button>
-              <button
-                className="product-modal-nav next"
-                onClick={onNext}
-                aria-label="Следен производ"
-              >
-                ›
-              </button>
-            </>
-          )}
         </div>
 
         <div className="product-modal-info">
@@ -103,6 +99,20 @@ function ProductModal({ product, index, total, phone, phoneDisplay, onClose, onP
             </span>
           )}
         </div>
+      </div>
+
+      {total > 1 && (
+        <button
+          className="product-modal-nav next"
+          onClick={(event) => {
+            event.stopPropagation();
+            onNext();
+          }}
+          aria-label="Следен производ"
+        >
+          ›
+        </button>
+      )}
       </div>
     </div>
   );
