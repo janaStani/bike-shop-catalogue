@@ -1999,21 +1999,32 @@ button {
   }
 
   .product-modal-frame {
-    flex-wrap: wrap;
-    gap: 10px;
+    position: relative;
   }
 
   .product-modal {
-    order: 1;
-    flex-basis: 100%;
     grid-template-columns: 1fr;
-    max-height: calc(100dvh - 82px);
+    max-height: calc(100dvh - 24px);
   }
 
   .product-modal-nav {
-    order: 2;
-    width: 44px;
-    height: 44px;
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    width: 40px;
+    height: 40px;
+    font-size: 26px;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  .product-modal-nav.prev {
+    left: -6px;
+  }
+
+  .product-modal-nav.next {
+    right: -6px;
   }
 
   .product-modal-image {
