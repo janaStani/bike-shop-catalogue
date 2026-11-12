@@ -9,8 +9,8 @@
     "run_worker_first": ["/img/*"]
   },
   "routes": [
-    { "pattern": "yourdomain.com", "custom_domain": true },
-    { "pattern": "www.yourdomain.com", "custom_domain": true }
+    { "pattern": "vozisitocak.com", "custom_domain": true },
+    { "pattern": "www.vozisitocak.com", "custom_domain": true }
   ],
   "triggers": {
     "crons": ["17 6 * * *"]
