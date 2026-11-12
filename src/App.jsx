@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Routes, Route } from "react-router-dom";
 import "./index.css";
 import shopLogo from "./assets/web logo.png";
@@ -7,6 +7,7 @@ import { supabase } from "./lib/supabase";
 import { imageSrc } from "./lib/imageUrl";
 import AdminLogin from "./pages/AdminLogin.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
+import ProductModal from "./components/ProductModal.jsx";
 
 const SHOP = {
   phone: "+38975437572",
@@ -44,6 +45,7 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const filtersRef = useRef(null);
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
   async function fetchProducts() {
@@ -93,6 +95,27 @@ function HomePage() {
   filteredProducts.sort(
     (a, b) => Number(isAvailable(b)) - Number(isAvailable(a))
   );
+
+  const selectedIndex = filteredProducts.findIndex(
+    (product) => product.id === selectedId
+  );
+  const selectedProduct =
+    selectedIndex >= 0 ? filteredProducts[selectedIndex] : null;
+  const productCount = filteredProducts.length;
+
+  const closeProduct = useCallback(() => setSelectedId(null), []);
+
+  const showPrevProduct = useCallback(() => {
+    if (selectedIndex < 0 || productCount === 0) return;
+    const prev = (selectedIndex - 1 + productCount) % productCount;
+    setSelectedId(filteredProducts[prev].id);
+  }, [selectedIndex, productCount, filteredProducts]);
+
+  const showNextProduct = useCallback(() => {
+    if (selectedIndex < 0 || productCount === 0) return;
+    const next = (selectedIndex + 1) % productCount;
+    setSelectedId(filteredProducts[next].id);
+  }, [selectedIndex, productCount, filteredProducts]);
 
   return (
     <div className="app">
@@ -284,6 +307,17 @@ function HomePage() {
                       : "product-card is-sold-out"
                   }
                   key={product.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Погледни ${product.name}`}
+                  onClick={() => setSelectedId(product.id)}
+                  onKeyDown={(event) => {
+                    if (event.target !== event.currentTarget) return;
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setSelectedId(product.id);
+                    }
+                  }}
                 >
                   <div className="product-image">
                     {product.image_url ? (
@@ -324,11 +358,12 @@ function HomePage() {
 
                       <button
                         aria-label={`Прашај за ${product.name}`}
-                        onClick={() =>
+                        onClick={(event) => {
+                          event.stopPropagation();
                           document
                             .getElementById("contact")
-                            ?.scrollIntoView({ behavior: "smooth" })
-                        }
+                            ?.scrollIntoView({ behavior: "smooth" });
+                        }}
                       >
                         <span className="condensed-text">
                           Прашај ↗
@@ -347,6 +382,19 @@ function HomePage() {
             )}
           </div>
         </section>
+
+        {selectedProduct && (
+          <ProductModal
+            product={selectedProduct}
+            index={selectedIndex}
+            total={productCount}
+            phone={SHOP.phone}
+            phoneDisplay={SHOP.phoneDisplay}
+            onClose={closeProduct}
+            onPrev={showPrevProduct}
+            onNext={showNextProduct}
+          />
+        )}
 
         <section className="contact-section" id="contact">
           <div className="contact-info">
