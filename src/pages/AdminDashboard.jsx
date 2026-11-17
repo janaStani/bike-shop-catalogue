@@ -208,7 +208,14 @@ function AdminDashboard() {
                         </div>
                       </td>
 
-                      <td>{product.category}</td>
+                      <td>
+                        {product.category}
+                        {product.subcategory && (
+                          <span className="admin-subcategory">
+                            {product.subcategory}
+                          </span>
+                        )}
+                      </td>
 
                       <td>
                         {Number(product.price).toLocaleString("mk-MK")} €

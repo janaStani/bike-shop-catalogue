@@ -8,6 +8,13 @@ import { imageSrc } from "./lib/imageUrl";
 import AdminLogin from "./pages/AdminLogin.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import ProductModal from "./components/ProductModal.jsx";
+import {
+  ALL_PRODUCTS,
+  ALL_PARTS,
+  CATEGORIES,
+  PARTS_CATEGORY,
+  PART_SUBCATEGORIES,
+} from "./lib/categories";
 
 const SHOP = {
   phone: "+38975437572",
@@ -22,20 +29,31 @@ const SHOP = {
     "https://maps.google.com/maps?q=42.0059342,21.3392421&z=16&output=embed",
 };
 
-const categories = [
-  "Сите производи",
-  "Планински велосипеди",
-  "Електрични велосипеди",
-  "Велосипеди за друмско возење",
-  "Делови за велосипеди",
-  "Додатоци",
+const categories = [ALL_PRODUCTS, ...CATEGORIES];
+
+const SERVICES = [
+  {
+    title: "Сервис на велосипеди",
+    text: "Поправки и редовно одржување: подесување на менувачи и сопирачки, центрирање тркала, замена на делови.",
+    tags: ["МТБ", "Трекинг", "Е-велосипеди"],
+  },
+  {
+    title: "Делови на залиха",
+    text: "Ги имаме сите основни делови за планински, трекинг и електрични велосипеди.",
+    tags: ["Гуми", "Сопирачки", "Синџири", "Делови за е-велосипеди"],
+  },
+  {
+    title: "Испорака на делови",
+    text: "Не си во близина? Јави се, кажи што ти треба и ќе ти го испратиме делот.",
+    tags: ["Нарачка по телефон"],
+  },
 ];
 
 
 
 function HomePage() {
-  const [activeCategory, setActiveCategory] =
-    useState("Сите производи");
+  const [activeCategory, setActiveCategory] = useState(ALL_PRODUCTS);
+  const [activeSubcategory, setActiveSubcategory] = useState(ALL_PARTS);
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -80,16 +98,33 @@ function HomePage() {
 
   const isAvailable = (product) => product.available !== false;
 
+  const selectCategory = (category) => {
+    setActiveCategory(category);
+    setActiveSubcategory(ALL_PARTS);
+  };
+
+  const showParts = () => {
+    selectCategory(PARTS_CATEGORY);
+    document.getElementById("catalogue")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
-      activeCategory === "Сите производи" ||
+      activeCategory === ALL_PRODUCTS ||
       product.category === activeCategory;
 
-    const matchesSearch =
-      product.name.toLowerCase().includes(search.toLowerCase()) ||
-      (product.brand || "").toLowerCase().includes(search.toLowerCase());
+    const matchesSubcategory =
+      activeCategory !== PARTS_CATEGORY ||
+      activeSubcategory === ALL_PARTS ||
+      product.subcategory === activeSubcategory;
 
-    return matchesCategory && matchesSearch;
+    const query = search.toLowerCase();
+    const matchesSearch =
+      product.name.toLowerCase().includes(query) ||
+      (product.brand || "").toLowerCase().includes(query) ||
+      (product.subcategory || "").toLowerCase().includes(query);
+
+    return matchesCategory && matchesSubcategory && matchesSearch;
   });
 
   filteredProducts.sort(
@@ -127,6 +162,10 @@ function HomePage() {
         <nav className={menuOpen ? "mobile-nav open" : "mobile-nav"}>
           <a href="#" onClick={() => setMenuOpen(false)}>
             <span className="condensed-text">Почетна</span>
+          </a>
+
+          <a href="#service" onClick={() => setMenuOpen(false)}>
+            <span className="condensed-text">Сервис</span>
           </a>
 
           <a href="#categories" onClick={() => setMenuOpen(false)}>
@@ -175,17 +214,23 @@ function HomePage() {
 
             <p>
               <span className="condensed-text">
-                Разгледај ја нашата понуда на квалитетни
-                велосипеди, делови и додатоци. Сè што ти
-                е потребно за твојата следна авантура.
+                Велосипеди, делови и додатоци за МТБ, трекинг
+                и е-велосипеди, плус сервис и испорака на
+                делови. Сè на едно место.
               </span>
             </p>
 
-            <a href="#catalogue" className="primary-button">
-              <span className="condensed-text">
-                Разгледај ги понудите →
-              </span>
-            </a>
+            <div className="hero-actions">
+              <a href="#catalogue" className="primary-button">
+                <span className="condensed-text">
+                  Разгледај ги понудите →
+                </span>
+              </a>
+
+              <a href="#service" className="outline-button">
+                <span className="condensed-text">Сервис →</span>
+              </a>
+            </div>
           </div>
 
           <div className="hero-image">
@@ -202,6 +247,60 @@ function HomePage() {
                 Пронајди го твојот следен велосипед.
               </strong>
             </div>
+          </div>
+        </section>
+
+        <section className="service-section" id="service">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow condensed-text">
+                СЕРВИС И ДЕЛОВИ
+              </span>
+              <h2>
+                <span className="condensed-text">
+                  Го поправаме твојот велосипед
+                </span>
+              </h2>
+            </div>
+
+            <p>
+              <span className="condensed-text">
+                Донеси го велосипедот или јави се за договор.
+              </span>
+            </p>
+          </div>
+
+          <div className="service-grid">
+            {SERVICES.map((service, index) => (
+              <article className="service-card" key={service.title}>
+                <span className="service-number condensed-text">
+                  0{index + 1}
+                </span>
+                <h3 className="condensed-text">{service.title}</h3>
+                <p>{service.text}</p>
+                <ul className="service-tags">
+                  {service.tags.map((tag) => (
+                    <li key={tag}>{tag}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+
+          <div className="service-actions">
+            <a href={`tel:${SHOP.phone}`} className="primary-button">
+              <span className="condensed-text">
+                Закажи сервис: {SHOP.phoneDisplay}
+              </span>
+            </a>
+
+            <button
+              type="button"
+              className="outline-button"
+              onClick={() => showParts()}
+            >
+              <span className="condensed-text">Види делови →</span>
+            </button>
           </div>
         </section>
 
@@ -230,7 +329,7 @@ function HomePage() {
               <button
                 key={category}
                 onClick={() => {
-                  setActiveCategory(category);
+                  selectCategory(category);
                   document
                     .getElementById("catalogue")
                     ?.scrollIntoView({ behavior: "smooth" });
@@ -269,7 +368,7 @@ function HomePage() {
               {categories.map((category) => (
                 <button
                   key={category}
-                  onClick={() => setActiveCategory(category)}
+                  onClick={() => selectCategory(category)}
                   className={
                     activeCategory === category
                       ? "filter-button active"
@@ -292,6 +391,24 @@ function HomePage() {
               className="search-input"
             />
           </div>
+
+          {activeCategory === PARTS_CATEGORY && (
+            <div className="subfilters" aria-label="Поткатегории на делови">
+              {[ALL_PARTS, ...PART_SUBCATEGORIES].map((subcategory) => (
+                <button
+                  key={subcategory}
+                  onClick={() => setActiveSubcategory(subcategory)}
+                  className={
+                    activeSubcategory === subcategory
+                      ? "subfilter-button active"
+                      : "subfilter-button"
+                  }
+                >
+                  {subcategory}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="product-grid">
             {loading ? (
@@ -332,7 +449,7 @@ function HomePage() {
                     )}
 
                     <span className="product-category condensed-text">
-                      {product.category}
+                      {product.subcategory || product.category}
                     </span>
 
                     {!isAvailable(product) && (
@@ -402,7 +519,10 @@ function HomePage() {
 
             <h2>Да го пронајдеме вистинскиот велосипед за тебе.</h2>
 
-            <p>Имаш прашања за некој производ? Контактирај нè.</p>
+            <p>
+              Имаш прашања за некој производ, ти треба сервис или
+              сакаш да ти испратиме дел? Контактирај нè.
+            </p>
 
             <dl className="contact-details">
               <div>

@@ -1,19 +1,17 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import { compressImage } from "../lib/compressImage";
-
-const categories = [
-  "Планински велосипеди",
-  "Електрични велосипеди",
-  "Велосипеди за друмско возење",
-  "Делови за велосипеди",
-  "Додатоци",
-];
+import {
+  CATEGORIES as categories,
+  PARTS_CATEGORY,
+  PART_SUBCATEGORIES,
+} from "../lib/categories";
 
 function AdminProductForm({ onProductAdded, onCancel, product = null }) {
   const [name, setName] = useState(product?.name || "");
   const [brand, setBrand] = useState(product?.brand || "");
   const [category, setCategory] = useState(product?.category || categories[0]);
+  const [subcategory, setSubcategory] = useState(product?.subcategory || "");
   const [price, setPrice] = useState(product?.price?.toString() || "");
   const [description, setDescription] = useState(product?.description || "");
     const [image, setImage] = useState(null);
@@ -63,6 +61,7 @@ function AdminProductForm({ onProductAdded, onCancel, product = null }) {
         name,
         brand: brand || null,
         category,
+        subcategory: category === PARTS_CATEGORY ? subcategory || null : null,
         price: Number(price),
         description,
         image_url: finalImageUrl,
@@ -153,6 +152,26 @@ function AdminProductForm({ onProductAdded, onCancel, product = null }) {
             ))}
           </select>
         </div>
+
+        {category === PARTS_CATEGORY && (
+          <div className="admin-field">
+            <label>Поткатегорија *</label>
+            <select
+              value={subcategory}
+              onChange={(e) => setSubcategory(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                Избери поткатегорија
+              </option>
+              {PART_SUBCATEGORIES.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="admin-field">
           <label>Цена (€) *</label>

@@ -67,7 +67,11 @@ function ProductModal({ product, index, total, phone, phoneDisplay, onClose, onP
         </div>
 
         <div className="product-modal-info">
-          <span className="product-modal-category condensed-text">{product.category}</span>
+          <span className="product-modal-category condensed-text">
+            {product.subcategory
+              ? `${product.category} · ${product.subcategory}`
+              : product.category}
+          </span>
 
           {product.brand && (
             <span className="product-brand condensed-text">{product.brand}</span>
