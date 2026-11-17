@@ -2236,3 +2236,7 @@ button {
     margin: -14px 0 22px;
   }
 }
+
+.admin-form-anchor {
+  scroll-margin-top: 20px;
+}

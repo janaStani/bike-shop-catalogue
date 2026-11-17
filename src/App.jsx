@@ -181,10 +181,6 @@ function HomePage() {
           </a>
         </nav>
 
-        <a href="#catalogue" className="nav-button">
-          <span className="condensed-text">Разгледај велосипеди</span>
-        </a>
-
         <button
           className="menu-toggle"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -221,7 +217,7 @@ function HomePage() {
             </p>
 
             <div className="hero-actions">
-              <a href="#catalogue" className="primary-button">
+              <a href="#catalogue" className="outline-button">
                 <span className="condensed-text">
                   Разгледај ги понудите →
                 </span>
@@ -288,7 +284,7 @@ function HomePage() {
           </div>
 
           <div className="service-actions">
-            <a href={`tel:${SHOP.phone}`} className="primary-button">
+            <a href={`tel:${SHOP.phone}`} className="outline-button">
               <span className="condensed-text">
                 Закажи сервис: {SHOP.phoneDisplay}
               </span>
@@ -548,7 +544,7 @@ function HomePage() {
             </dl>
 
             <div className="contact-actions">
-              <a href={`tel:${SHOP.phone}`} className="primary-button">
+              <a href={`tel:${SHOP.phone}`} className="secondary-button">
                 Повикај →
               </a>
 

@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { imageSrc } from "../lib/imageUrl";
@@ -14,6 +13,13 @@ function AdminDashboard() {
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const formRef = useRef(null);
+
+  useEffect(() => {
+    if (showForm) {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [showForm, editingProduct]);
 
   // Load products from Supabase
   async function loadProducts() {
@@ -152,6 +158,7 @@ function AdminDashboard() {
           </div>
 
           {showForm && (
+            <div ref={formRef} className="admin-form-anchor">
             <AdminProductForm
                 product={editingProduct}
                 onCancel={() => {
@@ -164,6 +171,7 @@ function AdminDashboard() {
                 await loadProducts();
                 }}
             />
+            </div>
             )}
 
           {productsLoading ? (
